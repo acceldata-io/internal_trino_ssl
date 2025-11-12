@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage() {
+  printf "%s usage:\n" "$(basename "$0")"
+  printf "\t-i SSH key path\n"
+  printf "\t-u SSH user\n"
+  printf "\t-f Local coordinator certificate file path\n"
+  printf "\t-H Trino worker hostnames or IPs\n\n\n"
+  printf "Make sure to check trino-setup for additional arguments and\n"
+  printf "keep all JDK and password configs the same as the coordinator setup\n"
+}
+# This is the Coordinator certificate
+LOCAL_CERT="trino-coordinator.crt"
+SSH_USER="acceldata"
+
+while getopts "u:i:f:H:h" arg; do
+  case $arg in
+    i) SSH_KEY=${OPTARG};;
+    u) SSH_USER=${OPTARG};;
+    H) HOSTS=${OPTARG};;
+    f) LOCAL_CERT=${OPTARG};;
+    h) usage; exit 0 ;;
+    *) usage; exit 1 ;;
+  esac
+done
+
+if [ -z "$SSH_KEY" ] || [ -z "$HOSTS" ] || [ -z "$SSH_USER" ]; then
+  usage
+  exit 1
+fi
+
+IFS=', ' read -r -a hosts <<< "$HOSTS"
+
+if [ ! -f "$LOCAL_CERT" ]; then
+  echo >&2 "Local certificate file $LOCAL_CERT not found. Try running the 'coordinator' script to obtain the coordinator certificate."
+  exit 1
+fi
+
+for HOST in "${hosts[@]}"; do
+  echo "Setting up Trino worker on host: $HOST"
+  scp -i "$SSH_KEY" "$LOCAL_CERT" "$SSH_USER@$HOST:/tmp/trino-coordinator.crt"
+  ssh -i "$SSH_KEY" "$SSH_USER@$HOST" bash -s -- "$@" < trino-setup
+done
+
+rm "$LOCAL_CERT"
