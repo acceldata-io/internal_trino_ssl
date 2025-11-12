@@ -136,7 +136,7 @@ sudo "$JAVA_HOME/bin/keytool" -importcert -trustcacerts \
 if [ -f "$COORDINATOR_CERT" ]; then
   sudo "$JAVA_HOME/bin/keytool" -importcert -trustcacerts \
     -keystore "$JAVA_HOME/lib/security/cacerts" -storepass "$TRUSTSTORE_PASSWORD" \
-    -alias trino -file "$COORDINATOR_CERT" -noprompt
+    -alias trino-coordinator -file "$COORDINATOR_CERT" -noprompt
   sudo rm "$COORDINATOR_CERT" "$CERT"
 fi
 
