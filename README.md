@@ -39,10 +39,11 @@ There are optional arguments you can pass:
 You can pass additional arguments to trino-setup by appending \`&#x2013;\` after your command. These will be explained in [2.4](#org336750f).
 
 Example usage:
+```
     ./coordinator -i ~/.ssh/my_ssh_key -H 10.100.11.25 -u acceldata
     # Or specify where you want the coordinator cert saved to your local machine
     ./coordinator -i ~/.ssh/my_ssh_key -H 10.100.11.25 -u acceldata -f ~/trino-cert.crt
-
+```
 
 <a id="org47e940d"></a>
 
@@ -58,10 +59,11 @@ Much like the coordinator setup, you can specify additional arguments:
 -   -f [local/path/to/coordinator/cert] &#x2013; this defaults to \`trino-coordinator\` in your working directory.
 
 Example usage:
+```
     ./workers -i ~/.ssh/my_ssh_key -H 10.100.11.26,my_other_host,10.100.11.72
     # If you saved your coordinator cert somewhere else, or named it something else
     ./workers -i ~/.ssh/my_ssh_key -H 10.100.11.26,my_other_host,10.100.11.72 -f ~/trino-cert.crt -u acceldata
-
+```
 
 <a id="org6b7b15d"></a>
 
@@ -88,9 +90,9 @@ Options:
 By appending \`&#x2013;\` to your calls to either \`worker\` or \`coordinator\`, you can modify additional options for setting up Trino.
 
 In this example, we specify where JAVA\_HOME will be located as well as the PATH and password for the trino keystore.
-
+```
     ./coordinator -i ~/.ssh/my_ssh_key -H 10.100.11.25 -u acceldata -- -j /usr/lib/java23 -t my_new_trino_user -k /etc/security/ssl/trino.jks -p your_keystore_password
-
+```
 Anything after the \`&#x2013;\` will be treated as an argument to the \`trino-setup\` script.
 
 
