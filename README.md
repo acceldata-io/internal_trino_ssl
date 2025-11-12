@@ -14,7 +14,7 @@
 
 # Overview
 
-This set of scripts can be used to set up Java, a jks certificate, the trino user, and *etc/trino*. You can then proceed to the regular setup for Trino through Ambari, making sure to note on which machines you&rsquo;ve set up the coordinator, and on which you&rsquo;ve set up the workers.
+This set of scripts can be used to set up Java, a jks certificate, the trino user, and /etc/trino. You can then proceed to the regular setup for Trino through Ambari, making sure to note on which machines you&rsquo;ve set up the coordinator, and on which you&rsquo;ve set up the workers.
 
 Before proceeding to setup the coordinator and the workers, make sure to read through [2.3](#org6b7b15d) which contains additional configuration options you may want.
 
