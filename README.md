@@ -39,7 +39,8 @@ There are optional arguments you can pass:
 You can pass additional arguments to trino-setup by appending \`&#x2013;\` after your command. These will be explained in [2.4](#org336750f).
 
 Example usage:
-
+    ./coordinator -i ~/.ssh/my_ssh_key -H 10.100.11.25 -u acceldata
+    # Or specify where you want the coordinator cert saved to your local machine
     ./coordinator -i ~/.ssh/my_ssh_key -H 10.100.11.25 -u acceldata -f ~/trino-cert.crt
 
 
@@ -57,7 +58,8 @@ Much like the coordinator setup, you can specify additional arguments:
 -   -f [local/path/to/coordinator/cert] &#x2013; this defaults to \`trino-coordinator\` in your working directory.
 
 Example usage:
-
+    ./workers -i ~/.ssh/my_ssh_key -H 10.100.11.26,my_other_host,10.100.11.72
+    # If you saved your coordinator cert somewhere else, or named it something else
     ./workers -i ~/.ssh/my_ssh_key -H 10.100.11.26,my_other_host,10.100.11.72 -f ~/trino-cert.crt -u acceldata
 
 
