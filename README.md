@@ -53,6 +53,8 @@ You will need to have already setup your Coordinator&rsquo;s environment in orde
 
 Having done this, run \`./workers -i [path to your ssh key] -H [comma or space separated list of hosts]\`
 
+Importantly, you can setup as many workers as you want with one invocation of this script by passing a comma separated list of hosts.
+
 Much like the coordinator setup, you can specify additional arguments:
 
 -   -u [user] &#x2013; this defaults to \`acceldata\`
