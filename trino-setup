@@ -22,14 +22,14 @@ usage() {
 
 START_DIR="$(pwd)"
 PASSWORD="Hadoop@123"
-JAVA_HOME=/tmp/jdk-23
+VALID_JAVA="23"
+JAVA_HOME=/opt/jdk-"$VALID_JAVA"
 COORDINATOR_CERT="/tmp/trino-coordinator.crt"
 TRINO_KEYSTORE="/etc/trino/trino.jks"
 TRUSTSTORE_PASSWORD="changeit"
 CERT="/tmp/trino.crt"
 # Whatever url this is, it needs to point directly to the tarball
 JDK_URL="https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.2%2B7/OpenJDK23U-jdk_x64_linux_hotspot_23.0.2_7.tar.gz"
-VALID_JAVA="23"
 TRINO_USER="trino"
 
 while getopts "p:j:c:C:l:t:k:r:h" arg; do
