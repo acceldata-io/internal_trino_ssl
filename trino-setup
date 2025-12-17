@@ -134,10 +134,12 @@ sudo "$JAVA_HOME/bin/keytool" -importcert -trustcacerts \
   -alias trino -file "$CERT" -noprompt
 
 if [ -f "$COORDINATOR_CERT" ]; then
-  sudo "$JAVA_HOME/bin/keytool" -delete \
-    -alias trino-coordinator \
-    -keystore "$JAVA_HOME/lib/security/cacerts" \
-    -storepass "$TRUSTSTORE_PASSWORD" || true
+  if ! sudo "$JAVA_HOME/bin/keytool" -delete \
+      -alias trino-coordinator \
+      -keystore "$JAVA_HOME/lib/security/cacerts" \
+      -storepass "$TRUSTSTORE_PASSWORD" >/dev/null 2>&1; then
+    echo "No existing trino-coordinator alias to delete"
+  fi
   sudo "$JAVA_HOME/bin/keytool" -importcert -trustcacerts \
     -keystore "$JAVA_HOME/lib/security/cacerts" -storepass "$TRUSTSTORE_PASSWORD" \
     -alias trino-coordinator -file "$COORDINATOR_CERT" -noprompt
