@@ -74,9 +74,24 @@ if [ ! -d "$JAVA_HOME" ]; then
 fi
 
 if [ -f "$JAVA_HOME/bin/java" ]; then
-  JAVA_VERSION="$("$JAVA_HOME/bin/java" -version 2>&1 | perl -ne 'print $1 if /["](\d{1,2})[0-9.]+["]/')"
+  # Extract the quoted version string from `java -version` output (e.g. "1.8.0_362" or "17.0.9")
+  ver_str="$("$JAVA_HOME/bin/java" -version 2>&1 | awk -F\" '/version/ {print $2; exit}')"
+
+  # Derive the major version:
+  # - if it starts with "1.", use the second field (1.8 -> 8)
+  # - otherwise use the first field (11.0.20 -> 11, 17.0.9 -> 17)
+  case "$ver_str" in
+    1.*)
+      JAVA_VERSION="$(printf '%s\n' "$ver_str" | cut -d. -f2)"
+      ;;
+    *)
+      JAVA_VERSION="$(printf '%s\n' "$ver_str" | cut -d. -f1)"
+      ;;
+  esac
+
   if [ "$JAVA_VERSION" -ne "$VALID_JAVA" ]; then
-    printf >&2 "Existing JDK version '%s' in %s on $(hostname) is not supported\n" "$JAVA_VERSION" "$JAVA_HOME"
+    printf >&2 "Existing JDK version '%s' in %s on %s is not supported\n" \
+      "$JAVA_VERSION" "$JAVA_HOME" "$(hostname)"
     exit 1
   fi
 else
