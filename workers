@@ -17,22 +17,28 @@ SSH_USER="acceldata"
 
 while getopts "u:i:f:H:h" arg; do
   case $arg in
-    i) SSH_KEY=${OPTARG};;
-    u) SSH_USER=${OPTARG};;
-    H) HOSTS=${OPTARG};;
-    f) LOCAL_CERT=${OPTARG};;
-    h) usage; exit 0 ;;
-    *) usage; exit 1 ;;
+  i) SSH_KEY=${OPTARG} ;;
+  u) SSH_USER=${OPTARG} ;;
+  H) HOSTS=${OPTARG} ;;
+  f) LOCAL_CERT=${OPTARG} ;;
+  h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
   esac
 done
 shift $((OPTIND - 1))
 
-if [ -z "$SSH_KEY" ] || [ -z "$HOSTS" ] || [ -z "$SSH_USER" ]; then
+if [ -z "$HOSTS" ] || [ -z "$SSH_USER" ]; then
   usage
   exit 1
 fi
 
-IFS=', ' read -r -a hosts <<< "$HOSTS"
+IFS=', ' read -r -a hosts <<<"$HOSTS"
 
 if [ ! -f "$LOCAL_CERT" ]; then
   echo >&2 "Local certificate file $LOCAL_CERT not found. Try running the 'coordinator' script to obtain the coordinator certificate."
@@ -41,8 +47,13 @@ fi
 
 for HOST in "${hosts[@]}"; do
   echo "Setting up Trino worker on host: $HOST"
-  scp -i "$SSH_KEY" "$LOCAL_CERT" "$SSH_USER@$HOST:/tmp/trino-coordinator.crt"
-  ssh -i "$SSH_KEY" "$SSH_USER@$HOST" bash -s -- "$@" < trino-setup
+  if [ -n "$SSH_KEY" ]; then
+    scp -i "$SSH_KEY" "$LOCAL_CERT" "$SSH_USER@$HOST:/tmp/trino-coordinator.crt"
+    ssh -i "$SSH_KEY" "$SSH_USER@$HOST" bash -s -- "$@" <trino-setup
+  else
+    scp "$LOCAL_CERT" "$SSH_USER@$HOST:/tmp/trino-coordinator.crt"
+    ssh "$SSH_USER@$HOST" bash -s -- "$@" <trino-setup
+  fi
 done
 
 rm "$LOCAL_CERT"

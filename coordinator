@@ -2,7 +2,7 @@
 
 usage() {
   printf "%s usage:\n" "$(basename "$0")"
-  printf "\t-i SSH Key Path\n"
+  printf "\t-i SSH Key Path. If not specified, you will need to enter a password\n"
   printf "\t-u SSH user\n"
   printf "\t-H Trino Coordinator Hostname or IP\n"
   printf "\t-f Local path to save the coordinator certificate\n"
@@ -14,21 +14,30 @@ SSH_USER="acceldata"
 
 while getopts "u:i:f:H:h" arg; do
   case $arg in
-    i) SSH_KEY=${OPTARG};;
-    u) SSH_USER=${OPTARG};;
-    H) HOST=${OPTARG};;
-    f) LOCAL_CERT=${OPTARG};;
-    h) usage; exit 0 ;;
-    *) usage; exit 1 ;;
+  i) SSH_KEY=${OPTARG} ;;
+  u) SSH_USER=${OPTARG} ;;
+  H) HOST=${OPTARG} ;;
+  f) LOCAL_CERT=${OPTARG} ;;
+  h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
   esac
 done
 shift $((OPTIND - 1))
 
-
-if [ -z "$SSH_KEY" ] || [ -z "$HOST" ] || [ -z "$SSH_USER" ]; then
+if [ -z "$HOST" ] || [ -z "$SSH_USER" ]; then
   usage
   exit 1
 fi
-
-ssh -i "$SSH_KEY" "$SSH_USER@$HOST" bash -s -- "$@" < trino-setup
-scp -i "$SSH_KEY" "$SSH_USER@$HOST:/tmp/trino.crt" "$LOCAL_CERT"
+if [ -n "$SSH_KEY" ]; then
+  ssh -i "$SSH_KEY" "$SSH_USER@$HOST" bash -s -- "$@" <trino-setup
+  scp -i "$SSH_KEY" "$SSH_USER@$HOST:/tmp/trino.crt" "$LOCAL_CERT"
+else
+  ssh "$SSH_USER@$HOST" bash -s -- "$@" <trino-setup
+  scp "$SSH_USER@$HOST:/tmp/trino.crt" "$LOCAL_CERT"
+fi

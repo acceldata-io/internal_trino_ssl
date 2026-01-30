@@ -2,7 +2,7 @@
 
 set -e
 
-usage() { 
+usage() {
   ACTUAL_PATH="$(realpath "$0")"
   PARENT_FOLDER="$(dirname "$ACTUAL_PATH")"
   printf "%s usage:\n" "$(basename "$0")"
@@ -34,22 +34,21 @@ TRINO_USER="trino"
 
 while getopts "p:j:c:C:l:t:k:r:h" arg; do
   case $arg in
-    p) PASSWORD=${OPTARG};;
-    j) JAVA_HOME=${OPTARG};;
-    c) CERT=${OPTARG};;
-    C) COORDINATOR_CERT=${OPTARG};;
-    l) JDK_URL=${OPTARG};;
-    t) TRINO_USER=${OPTARG};;
-    k) TRINO_KEYSTORE=${OPTARG};;
-    r) TRUSTSTORE_PASSWORD=${OPTARG};;
-    h|*)
-      usage
-      exit 0
-      ;;
+  p) PASSWORD=${OPTARG} ;;
+  j) JAVA_HOME=${OPTARG} ;;
+  c) CERT=${OPTARG} ;;
+  C) COORDINATOR_CERT=${OPTARG} ;;
+  l) JDK_URL=${OPTARG} ;;
+  t) TRINO_USER=${OPTARG} ;;
+  k) TRINO_KEYSTORE=${OPTARG} ;;
+  r) TRUSTSTORE_PASSWORD=${OPTARG} ;;
+  h | *)
+    usage
+    exit 0
+    ;;
   esac
 done
 shift $((OPTIND - 1))
-
 
 if [ -z "$JAVA_HOME" ] || [ -z "$PASSWORD" ] || [ -z "$CERT" ] || [ -z "$JDK_URL" ]; then
   usage
@@ -66,7 +65,7 @@ if ! grep "hadoop" /etc/group >/dev/null 2>&1; then
   sudo groupadd hadoop
 fi
 
-sudo useradd -m trino -G hadoop || echo "Trino user exists" 
+sudo useradd -m trino -G hadoop || echo "Trino user exists"
 echo "$TRINO_USER:trino" | sudo chpasswd
 
 if [ ! -d "$JAVA_HOME" ]; then
@@ -88,7 +87,6 @@ else
   sudo tar xf jdk-$VALID_JAVA.tar.gz -C "$JAVA_HOME" --strip-components 1
   sudo rm jdk-$VALID_JAVA.tar.gz
 fi
-
 
 if [ ! -d /etc/trino ]; then
   sudo mkdir -p /etc/trino/ && sudo chmod 770 /etc/trino/ && sudo chown -R "$TRINO_USER:hadoop" /etc/trino
